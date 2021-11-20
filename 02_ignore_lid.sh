@@ -13,8 +13,11 @@ if [ -f $lid_config_file ];
         # And then change #LidSwitchIgnoreInhibited=yes to LidSwitchIgnoreInhibited=no
         sudo sed -i 's/#LidSwitchIgnoreInhibited=yes/LidSwitchIgnoreInhibited=no/g' /etc/systemd/logind.conf
         # Apply the changes by restarting the systemd-logind.service
-        sudo systemctl restart systemd-logind.service
- 
+        # sudo systemctl restart systemd-logind.service
+        # Restarting the system-logind
+        # sudo systemctl restart systemd-logind
+        # Restarting the entire system
+        sudo reboot
  }
  else
 echo $lid_config_file "is not there, so we have to find a different solution!";
