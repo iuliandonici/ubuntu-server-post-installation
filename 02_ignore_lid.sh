@@ -17,7 +17,11 @@ if [ -f $lid_config_file ];
         # Restarting the system-logind
         # sudo systemctl restart systemd-logind
         # Restarting the entire system
-        sudo reboot
+        # sudo reboot
+        # Restart the Gnome Desktop Manager on systemd-based systems. To restart the GDM service on systemd-based systems, run the following command:
+        systemctl restart gdm.service
+        # However, if you have deployed LightDM display manager in that case execute:
+        # systemctl restart lightdm
  }
  else
 echo $lid_config_file "is not there, so we have to find a different solution!";
