@@ -1,0 +1,18 @@
+[Unit]
+SourcePath=/usr/bin/ensure-vbox-signed
+Description=Ensure the VirtualBox Linux kernel modules are signed
+Before=vboxdrv.service
+After=
+
+[Service]
+Type=oneshot
+Restart=no
+TimeoutSec=30
+IgnoreSIGPIPE=no
+KillMode=process
+GuessMainPID=no
+RemainAfterExit=yes
+ExecStart=/usr/bin/ensure-vbox-signed
+
+[Install]
+WantedBy=multi-user.target

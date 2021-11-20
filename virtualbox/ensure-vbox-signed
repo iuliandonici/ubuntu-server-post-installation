@@ -1,0 +1,59 @@
+#!/bin/bash
+# Script for fixing the EFI boot issue (https://run.tournament.org.il/secureboot-and-virtualbox-kernel-modules/) 
+MOKUTIL="/usr/bin/mokutil"
+MODPROBE="/sbin/modprobe"
+MODINFO="/sbin/modinfo"
+SIG_DIR="/var/lib/shim-signed/mok"
+PUB="${SIG_DIR}/MOK.der"
+KEY="${SIG_DIR}/MOK.priv"
+ 
+if ! "${MOKUTIL}" --sb-state | grep -qi '[[:space:]]enabled$' ; then
+	echo "WARNING: Secure Boot is not enabled, signing is not necessary"
+	exit 0
+fi
+ 
+# If secure boot is enabled, we try to find the signature keys
+[ -f "${KEY}" ] || { echo "ERROR: Couldn't find the MOK private key at ${KEY}" ; exit 1 ; }
+[ -f "${PUB}" ] || { echo "ERROR: Couldn't find the MOK public key at ${PUB}" ; exit 1 ; }
+ 
+INFO="$("${MODINFO}" -n vboxdrv)"
+if [ -z "${INFO}" ] ; then
+	# If there's no such module, compile it
+	/usr/lib/virtualbox/vboxdrv.sh setup
+	INFO="$("${MODINFO}" -n vboxdrv)"
+	if [ -z "${INFO}" ] ; then
+		echo "ERROR: Module compilation failed (${MODPROBE} couldn't find it after vboxdrv.sh was called)"
+		exit 1
+	fi
+fi
+ 
+KVER="${1}"
+[ -z "${KVER}" ] && KVER="$(uname -r)"
+ 
+KDIR="/usr/src/linux-headers-${KVER}"
+DIR="$(dirname "${INFO}")"
+ 
+for module in "${DIR}"/vbox*.ko ; do
+	MOD="$(basename "${module}")"
+	MOD="${MOD//.*/}"
+ 
+	# Quick check - if the module loads, it needs no signing
+	echo "Loading ${MOD}..."
+	"${MODPROBE}" "${MOD}" && continue
+ 
+	# The module didn't load, and it must have been built (above), so it needs signing
+	echo "Signing ${MOD}..."
+	if ! "${KDIR}/scripts/sign-file" sha256 "${KEY}" "${PUB}" "${module}" ; then
+		echo -e "\tFailed to sign ${module} with ${KEY} and ${PUB} (rc=${?}, kernel=${KVER})"
+		exit 1
+	fi
+ 
+	echo "Reloading the signed ${MOD}..."
+	if ! "${MODPROBE}" "${MOD}" ; then
+		echo -e "\tSigned ${MOD}, but failed to load it from ${module}"
+		exit 1
+	fi
+	echo "Loaded the signed ${MOD}!"
+done
+exit 0
+

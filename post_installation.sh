@@ -42,13 +42,24 @@ sudo apt install apt-transport-https
 sudo apt update
 sudo apt install code
 sudo apt-get update
+# Install & configure Virtual Box
+sudo apt-get update
+sudo apt-get install virtualbox virtualbox-dkms -y
+# Configure Virtual Box for EFI boot (https://run.tournament.org.il/secureboot-and-virtualbox-kernel-modules/)
+# 1. Copy virtualbox/ensure-vbox-signed file to /usr/bin/
+sudo cp -r virtualbox/ensure-vbox-signed /usr/bin/
+# 2. Make the file executable
+sudo chmod +x /usr/bin/ensure-vbox-signed
+# 3. Copy virtualbox/ensure-vboxdrv-signed.service to /etc/systemd/system/
+sudo cp -r virtualbox/ensure-vboxdrv-signed.service /etc/systemd/system
+# Reload daemon
+sudo systemctl daemon-reload
+# Start the newly created daemon
+sudo systemctl start ensure-vboxdrv-signed.service
+sudo apt-get update 
 # Configure Github
 git config --global user.name "Iulian Donici"
 git config --global user.email "iuliandonici@gmail.com"
 git config --global color.ui auto
-
 # mkdir ~/dev/repos
 # cd ~/dev/repos
-sudo apt install apt-transport-https
-sudo apt update
-sudo apt install code
