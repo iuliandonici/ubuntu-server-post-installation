@@ -44,7 +44,7 @@ sudo apt install code
 sudo apt-get update
 # Install & configure Virtual Box
 sudo apt-get update
-./adjust_vb.sh
+
 # sudo apt-get install virtualbox virtualbox-dkms -y
 # # Configure Virtual Box for EFI boot (https://run.tournament.org.il/secureboot-and-virtualbox-kernel-modules/)
 # # 1. Copy virtualbox/ensure-vbox-signed file to /usr/bin/

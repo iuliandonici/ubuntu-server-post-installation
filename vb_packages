@@ -1,0 +1,14 @@
+virtualbox-source
+virtualbox-guest-utils
+virtualbox-guest-additions-iso
+virtualbox-guest-dkms
+virtualbox-dkms
+virtualbox-guest-dkms-hwe
+virtualbox-ext-pack
+virtualbox
+virtualbox-guest-x11-hwe
+virtualbox-guest-source
+virtualbox-qt
+virtualbox-guest-source-hwe
+virtualbox-guest-utils-hwe
+virtualbox-guest-x11
